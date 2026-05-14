@@ -1,0 +1,14 @@
+import cv2
+import numpy as np
+gray = cv2.cvtColor(cv2.imread("car.jpeg"), cv2.COLOR_BGR2GRAY)
+negative = 255 - gray
+min_val, max_val = np.min(gray), np.max(gray)
+contrast = ((gray - min_val) / (max_val - min_val) * 255).astype(np.uint8)
+mean_filter = cv2.blur(gray, (5, 5))
+gaussian_filter = cv2.GaussianBlur(gray, (5, 5), 0)
+cv2.imshow("Negative Image", negative)
+cv2.imshow("Contrast Stretched Image", contrast)
+cv2.imshow("Mean Filtered Image", mean_filter)
+cv2.imshow("Gaussian Filtered Image", gaussian_filter)
+cv2.waitKey(0)
+cv2.destroyAllWindows()

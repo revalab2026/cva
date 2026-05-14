@@ -1,0 +1,13 @@
+import tensorflow as tf
+from tensorflow.keras.applications.mobilenet import MobileNet, preprocess_input, decode_predictions
+model = MobileNet(weights='imagenet')
+img = cv2.imread("car.jpg")
+img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+img_resized = cv2.resize(img_rgb, (224, 224))
+img_array = preprocess_input(np.expand_dims(np.array(img_resized), axis=0))
+predictions = model.predict(img_array)
+decoded = decode_predictions(predictions, top=1)[0][0]
+output_image = cv2.putText(img, f"{decoded[1]} ({decoded[2]*100:.2f}%)", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+cv2.imshow("Prediction", output_image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()

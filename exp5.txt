@@ -1,0 +1,23 @@
+import cv2
+import numpy as np
+gray = cv2.cvtColor(cv2.imread("car.jpg"), cv2.COLOR_BGR2GRAY)
+dft = cv2.dft(np.float32(gray), flags=cv2.DFT_COMPLEX_OUTPUT)
+rows, cols = gray.shape
+dft_shift = np.roll(dft, rows//2, axis=0)
+dft_shift = np.roll(dft_shift, cols//2, axis=1)
+magnitude = cv2.magnitude(dft_shift[:,:,0], dft_shift[:,:,1])
+magnitude = 20 * np.log(magnitude + 1)
+magnitude = cv2.normalize(magnitude, None, 0, 255, cv2.NORM_MINMAX)
+magnitude = magnitude.astype(np.uint8)
+mask = np.zeros((rows, cols, 2), np.uint8)
+mask[rows//2-30:rows//2+30, cols//2-30:cols//2+30] = 1
+filtered_dft = dft_shift * mask
+filtered_dft = np.roll(filtered_dft, -rows//2, axis=0)
+filtered_dft = np.roll(filtered_dft, -cols//2, axis=1)
+img_back = cv2.idft(filtered_dft)
+filtered_img = cv2.magnitude(img_back[:,:,0], img_back[:,:,1])
+filtered_img = cv2.normalize(filtered_img, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+cv2.imshow("Magnitude Spectrum", magnitude)
+cv2.imshow("Low-Pass Filtered Image", filtered_img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()

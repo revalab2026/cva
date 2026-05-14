@@ -1,0 +1,25 @@
+import cv2
+import numpy as np
+image = cv2.imread("car.jpg")
+image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+bright = cv2.convertScaleAbs(gray, alpha=1.2, beta=30)
+low_contrast = cv2.convertScaleAbs(gray, alpha=0.6, beta=0)
+R = image_rgb[:, :, 0]
+G = image_rgb[:, :, 1]
+B = image_rgb[:, :, 2]
+sampled = cv2.resize(gray, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_NEAREST)
+def quantize(img, levels):
+    step = 256 // levels
+    return (img // step) * step
+quantized = quantize(gray, 16)
+kernel = np.ones((3, 3), np.float32) / 9
+neighbor_avg = cv2.filter2D(gray, -1, kernel)
+cv2.imshow("Bright Image", bright)
+cv2.imshow("Low Contrast Image", low_contrast)
+cv2.imshow("Red Channel", R)
+cv2.imshow("Sampled Image (1/2)", sampled)
+cv2.imshow("Quantized Image (16 Levels)", quantized)
+cv2.imshow("Neighborhood Averaging", neighbor_avg)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
